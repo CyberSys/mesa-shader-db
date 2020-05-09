@@ -113,6 +113,9 @@ def get_spill_fill_if_change(m, b, a):
     return " (spills: " + change(b["spills"], a["spills"]) + "; fills: " + change(b["fills"], a["fills"]) + ")"
 
 def get_sched_mode(b, a):
+    if not b.get("scheduled"):
+        return ''
+
     p = " (scheduled: " + b["scheduled"]
 
     if b["scheduled"] == a["scheduled"]:
