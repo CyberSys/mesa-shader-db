@@ -87,9 +87,7 @@ class si_stats:
         ('privmem_vgprs', 'Private memory VGPRs', ''),
         ('scratch_size', 'Scratch size', 'dwords per thread'),
         ('code_size', 'Code Size', 'bytes'),
-        ('lds', 'LDS', 'blocks'),
         ('maxwaves', 'Max Waves', ''),
-        ('waitstates', 'Wait states', ''),
     ]
 
     def __init__(self):
@@ -193,8 +191,6 @@ class si_parser(object):
             r"([0-9]+) Spilled VGPRs: ([0-9]+)"),
     ]
 
-    re_nop = re.compile("^\ts_nop ([0-9]+)")
-
     def __init__(self):
         self._stats = None
         self._in_disasm = False
@@ -224,7 +220,6 @@ class si_parser(object):
                 self._stats.spilled_vgprs = int(match.group(8))
                 self._stats.privmem_vgprs = int(match.group(9)) if match.lastindex >= 9 else 0
                 self._stats.code_size = int(match.group(3))
-                self._stats.lds = int(match.group(4))
                 self._stats.scratch_size = int(match.group(5)) / (64 * 4)
                 self._stats.maxwaves = int(match.group(6))
                 old_stats = self._stats
@@ -242,11 +237,6 @@ class si_parser(object):
         else:
             if msg == "Shader Disassembly End":
                 self._in_disasm = False
-                return None
-
-            match = si_parser.re_nop.match(msg)
-            if match:
-                self._stats.waitstates += 1 + int(match.groups()[0])
                 return None
 
 def get_results(filename):
@@ -517,7 +507,7 @@ class grouped_stats:
                 name)
 
     def print_percentages(self, name):
-        print " {:6}{:6}{}{}{}{}{}{}{}{}{}".format(
+        print " {:6}{:6}{}{}{}{}{}{}{}{}".format(
             name,
             self.num_shaders,
             format_percent_change(self.before.sgprs, self.after.sgprs),
@@ -527,11 +517,10 @@ class grouped_stats:
             format_percent_change(self.before.privmem_vgprs, self.after.privmem_vgprs),
             format_percent_change(self.before.scratch_size, self.after.scratch_size),
             format_percent_change(self.before.code_size, self.after.code_size),
-            format_percent_change(self.before.maxwaves, self.after.maxwaves, more_is_better = True),
-            format_percent_change(self.before.waitstates, self.after.waitstates))
+            format_percent_change(self.before.maxwaves, self.after.maxwaves, more_is_better = True))
 
     def print_percentages_end(self, name, align, legend):
-        print "| {:{app_width}} |{:{shader_width}}|{}|{}|{}|{}|{}|{}|{}|{}|{}|".format(
+        print "| {:{app_width}} |{:{shader_width}}|{}|{}|{}|{}|{}|{}|{}|{}|".format(
             name,
             self.num_shaders,
             format_percent_change(self.before.sgprs, self.after.sgprs, min_width=len(legend[1])),
@@ -542,7 +531,6 @@ class grouped_stats:
             format_percent_change(self.before.scratch_size, self.after.scratch_size, min_width=len(legend[6])),
             format_percent_change(self.before.code_size, self.after.code_size, min_width=len(legend[7])),
             format_percent_change(self.before.maxwaves, self.after.maxwaves, min_width=len(legend[8]), more_is_better = True),
-            format_percent_change(self.before.waitstates, self.after.waitstates, min_width=len(legend[9])),
             app_width=align,
             shader_width=len(legend[0]))
 
@@ -727,7 +715,7 @@ def print_tables(before_all_results, after_all_results):
     # percentages
     longest_app_name = max(longest_app_name, len("PERCENTAGE DELTAS"))
     title = "| {:^{width}} |".format("PERCENTAGE DELTAS", width=longest_app_name)
-    legend = ["{:>9} ".format(s) for s in ["Shaders", "SGPRs", "VGPRs", "SpillSGPR", "SpillVGPR", "PrivVGPR", "Scratch", "CodeSize", "MaxWaves", "Waits"]]
+    legend = ["{:>9} ".format(s) for s in ["Shaders", "SGPRs", "VGPRs", "SpillSGPR", "SpillVGPR", "PrivVGPR", "Scratch", "CodeSize", "MaxWaves"]]
     header = title + "|".join(legend) + "|"
     print_yellow(header)
     print("|".join(["-" * len(a) for a in (header).split("|")]))
