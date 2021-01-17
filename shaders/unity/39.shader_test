@@ -4,6 +4,7 @@
 # This shader GLSL dump is put under MIT license
 [require]
 GLSL >= 1.10
+GL_ARB_shader_texture_lod
 
 [vertex shader]
 uniform vec3 _WorldSpaceCameraPos;
