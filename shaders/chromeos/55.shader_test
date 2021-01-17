@@ -1,5 +1,6 @@
 [require]
 GLSL ES >= 1.00
+GL_OES_standard_derivatives
 
 [fragment shader]
 #extension GL_OES_standard_derivatives : require
