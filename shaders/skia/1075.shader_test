@@ -1,5 +1,6 @@
 [require]
 GLSL >= 1.40
+GL_KHR_blend_equation_advanced
 
 [fragment shader]
 #version 140
