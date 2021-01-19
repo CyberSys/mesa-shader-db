@@ -104,6 +104,9 @@ def get_result_string(p, b, a):
     return p + change(b, a)
 
 def get_spill_fill_if_change(m, b, a):
+    if not b.get("spills") or not b.get("fills"):
+        return ''
+
     if m in ("spills", "fills"):
         return ''
 
