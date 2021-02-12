@@ -87,9 +87,8 @@ statistics = [
     Statistic(internal_name='max_waves', csv_names=['Subgroups per SIMD'], display_name='MaxWaves', more_is_better=True),
     # These ones are ACO-specific.
     Statistic(internal_name='instrs', csv_names=['Instructions'], display_name='Instrs'),
-    Statistic(internal_name='cycles', csv_names=['Busy Cycles'], display_name='Cycles'),
-    Statistic(internal_name='vmem', csv_names=['VMEM Score'], display_name='VMEM', more_is_better=True),
-    Statistic(internal_name='smem', csv_names=['SMEM Score'], display_name='SMEM', more_is_better=True),
+    Statistic(internal_name='latency', csv_names=['Latency'], display_name='Latency'),
+    Statistic(internal_name='inv_throughput', csv_names=['Inverse Throughput'], display_name='InvThroughput'),
     Statistic(internal_name='vclause', csv_names=['VMEM Clause'], display_name='VClause'),
     Statistic(internal_name='sclause', csv_names=['SMEM Clause'], display_name='SClause'),
     Statistic(internal_name='hash', csv_names=['Hash'], display_name='Hash', is_hash=True),
@@ -97,6 +96,11 @@ statistics = [
     Statistic(internal_name='branches', csv_names=['Branches'], display_name='Branches'),
     Statistic(internal_name='pre_sgprs', csv_names=['Pre-Sched SGPRs'], display_name='PreSGPRs'),
     Statistic(internal_name='pre_vgprs', csv_names=['Pre-Sched VGPRs'], display_name='PreVGPRs'),
+
+    # Deprecated ACO statistics
+    Statistic(internal_name='cycles', csv_names=['Busy Cycles'], display_name='Cycles'),
+    Statistic(internal_name='vmem', csv_names=['VMEM Score'], display_name='VMEM', more_is_better=True),
+    Statistic(internal_name='smem', csv_names=['SMEM Score'], display_name='SMEM', more_is_better=True),
 ]
 
 
