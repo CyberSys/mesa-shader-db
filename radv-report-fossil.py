@@ -168,7 +168,7 @@ def calculate_percent(diff: 'DiffProtocol', stat:Statistic, spec:str = '{}') -> 
 
     res = ''
     if diff.new == diff.old:
-        res = '   .'
+        res = '.'
     elif diff.new and diff.old:
         res = '{:+.2%}'.format((diff.new / diff.old) - 1)
     elif not diff.old and not diff.new:
@@ -374,13 +374,15 @@ def print_best_worst(results: typing.Dict[str, Result], name: str, worst: bool):
     print('')
 
 
-def print_table_row(name: str, row_fmt: str, app_cell_width: int, cell_width: int,
+def print_table_row(name: str, row_fmt: typing.List[str],
                     statistics: typing.Set[Statistic], report: Report):
-    cols = [name, report.num_shaders]
+    cols = [row_fmt[0].format(name), row_fmt[1].format(report.num_shaders)]
+    i = 2
     for diff in report.get_diffs():
         if diff.stat in statistics:
-            cols.append(calculate_percent(diff, diff.stat, '{{:{}}}'.format(cell_width)))
-    print(row_fmt.format(*cols))
+            cols.append(calculate_percent(diff, diff.stat, row_fmt[i]))
+            i += 1
+    print(''.join(cols))
 
 def print_tables(total: Report, apps: typing.Dict[str, Report]):
     stats_needed = set()
@@ -394,9 +396,11 @@ def print_tables(total: Report, apps: typing.Dict[str, Report]):
     cell_width = max((len(stat.display_name) for stat in stats_needed), default=0)
     cell_width = max(cell_width, len('+999.99%')) + 1
 
-    row_fmt = ' {{:<{}}}'.format(app_cell_width)
-    row_fmt += '{{:<{}}}'.format(cell_width) * (len(stats_needed) + 1)
-    legend = row_fmt.format(*(['PERCENTAGE DELTAS', 'Shaders'] + [m.stat.display_name for m in total.get_diffs() if m.stat in stats_needed]))
+    stat_cols = [m.stat.display_name for m in total.get_diffs() if m.stat in stats_needed]
+    row_fmt = [' {{:<{}}}'.format(app_cell_width), '{:<8}']
+    row_fmt += ['{{:^{}}}'.format(max(len(col), 9) + 1) for col in stat_cols]
+    legend_cols = ['PERCENTAGE DELTAS', 'Shaders'] + stat_cols
+    legend = ''.join(fmt.format(col) for fmt, col in zip(row_fmt, legend_cols))
 
     i = 0
     num_spacing = max(1, len(apps.items()) // 20)
@@ -404,14 +408,14 @@ def print_tables(total: Report, apps: typing.Dict[str, Report]):
     for name, app in sorted(apps.items(), key=lambda v: v[0]):
         if i % spacing == 0:
             print_yellow(legend)
-        print_table_row(name, row_fmt, app_cell_width, cell_width, stats_needed, app);
+        print_table_row(name, row_fmt, stats_needed, app);
         i += 1
     if len(apps) == 0:
         print_yellow(' ' + legend)
     print(' ' + '-' * len(legend))
-    print_table_row('All affected', row_fmt, app_cell_width, cell_width, stats_needed, total.get_only_affected());
+    print_table_row('All affected', row_fmt, stats_needed, total.get_only_affected());
     print(' ' + '-' * len(legend))
-    print_table_row('Total', row_fmt, app_cell_width, cell_width, stats_needed, total);
+    print_table_row('Total', row_fmt, stats_needed, total);
     print('')
 
 
