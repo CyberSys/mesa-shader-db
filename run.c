@@ -497,6 +497,7 @@ main(int argc, char **argv)
     addenv("V3D_DEBUG", "precompile");
     addenv("ETNA_MESA_DEBUG", "shaderdb");
     addenv("PAN_MESA_DEBUG", "precompile");
+    addenv("LIMA_DEBUG", "precompile");
 
     if (!epoxy_has_egl_extension(EGL_NO_DISPLAY, "EGL_MESA_platform_gbm")) {
         fprintf(stderr, "ERROR: Missing EGL_MESA_platform_gbm\n");
