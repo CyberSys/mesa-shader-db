@@ -8,7 +8,7 @@ from scipy import stats
 import numpy as np
 
 def higher_is_better(m):
-    return m == "threads"
+    return m in ["threads", "waves", "maxwaves"]
 
 def get_results(filename, args):
     file = open(filename, "r")
