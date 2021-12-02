@@ -221,7 +221,7 @@ def main():
 
             # If the number of loops changed, then we may have unrolled some
             # loops, in which case other measurements will be misleading.
-            if m != "loops" and before[p]["loops"] != after[p]["loops"] and not args.ignore_loops:
+            if m != "loops" and "loops" in before[p] and before[p]["loops"] != after[p]["loops"] and not args.ignore_loops:
                 continue
 
             after_count = after[p][m]
