@@ -19,7 +19,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 # IN THE SOFTWARE.
 
-CFLAGS ?= -g -O2 -march=native -pipe
+CFLAGS ?= -g -O2 -pipe
 CFLAGS += -std=gnu99 -fopenmp
 LDLIBS = -lepoxy -lgbm
 
