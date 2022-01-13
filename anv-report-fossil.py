@@ -131,9 +131,6 @@ class Report:
 
     def _include(self, name: str, member: Diff, d0: typing.Optional[int],
                  d1: typing.Optional[int]) -> None:
-        if not (d0 and d1):
-            return
-
         if d0 > d1:
             member.helped[name] = ProgramDiff(name, d0, d1)
         elif d0 < d1:
