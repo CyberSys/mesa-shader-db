@@ -19,15 +19,20 @@ def get_results(filename, args):
 
     time_match = re.compile(r"Thread \S+ took (\S+) seconds")
     re_match = re.compile(r"(\S+) - (.*) shader: (.*)")
+    nv_match = re.compile(r"(\S+) - type: ([^,]*), (.*)")
     for line in lines:
         match = re.search(time_match, line)
         if match is not None:
             results["time"] = results["time"] + float(match.group(1))
             continue
 
+        nv_format = False
         match = re.search(re_match, line)
         if match is None:
-            continue
+            match = re.search(nv_match, line)
+            if match is None:
+                continue
+            nv_format = True
 
         groups = match.groups()
 
@@ -35,24 +40,35 @@ def get_results(filename, args):
         stage = groups[1]
         stats = groups[2]
 
+        if nv_format and stage.isdecimal():
+            stage = ["VS", "FS", "GS", "TCS", "TES", "CS"][int(stage)]
+
         if args.stage and args.stage != stage:
             continue
 
         result_group = {}
         for stat in stats.split(', '):
-            stat_split_spaces = stat.split(' ')
-
-            if stat_split_spaces[0] == "scheduled":
-                name = stat_split_spaces[0]
-                val = stat_split_spaces[3]
-
-            # Skipping "Promoted 0 constants" and "compacted..." on i965.
-            # We should probably change "compacted" to just a shader size
-            # in bytes.
-            elif len(stat_split_spaces) != 2:
-                continue
+            name = ""
+            val = 0
+            if nv_format:
+                stat_split = stat.split(": ")
+                name = stat_split[0]
+                val = stat_split[1]
             else:
-                name = stat_split_spaces[1]
+                stat_split_spaces = stat.split(' ')
+
+                if stat_split_spaces[0] == "scheduled":
+                    name = stat_split_spaces[0]
+                    val = stat_split_spaces[3]
+
+                # Skipping "Promoted 0 constants" and "compacted..." on i965.
+                # We should probably change "compacted" to just a shader size
+                # in bytes.
+                elif len(stat_split_spaces) != 2:
+                    continue
+                else:
+                    name = stat_split_spaces[1]
+
                 val = stat_split_spaces[0]
 
             if name == "inst":
